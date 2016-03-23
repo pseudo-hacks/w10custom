@@ -567,8 +567,9 @@ function Set-RegistryValue($path, $name, $value, $type = "DWord") {
 <# form functions #>
 
 function disclaimer {
-    $text = "このソフトウェアは、著作権者やコントリビューターによって【現状のまま】提供されるものとします。また、このソフトウェアは無保証であるものとします。`n" +
-            "著作権者やコントリビューターは、いかなる場合であれ、どんな損害賠償に対しても、責任を負わないものとします。" +
+    $text = "このソフトウェアは、GNU General Public Licenseバージョン3 (GPLv3)のもと提供されています。`n" +
+            "このソフトウェアは無保証であり、どのようなトラブルが発生しても著作権者は責任を負わないものとします。`n" +
+            "このソフトウェアの著作権やライセンスについての詳細は、起動後に「About」タブを参照してください。" +
             "`n`n" +
             "このソフトウェアは、個人利用のWindows 10 PCを対象としています。組織の管理下にあるPCでは、想定通りに動作しない可能性があります。"
     $caption = "確認 - " + $software_name
@@ -1025,7 +1026,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     $RecommendButton = New-Object System.Windows.Forms.Button
     $RecommendButton.Location = New-Object System.Drawing.Point(100, 30)
     $RecommendButton.Size = New-Object System.Drawing.Size(260, 24)
-    $RecommendButton.Text = "おすすめ項目を選択する(&R)"
+    $RecommendButton.Text = "おすすめ設定(&R)"
     $RecommendButton.Add_Click(
         {
             recommend_setting
@@ -1047,7 +1048,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     $PerformanceButton = New-Object System.Windows.Forms.Button
     $PerformanceButton.Location = New-Object System.Drawing.Point(100, 120)
     $PerformanceButton.Size = New-Object System.Drawing.Size(260, 24)
-    $PerformanceButton.Text = "パフォーマンス重視設定を実行する(&P)"
+    $PerformanceButton.Text = "パフォーマンス重視設定(&P)"
     $PerformanceButton.Add_Click(
         {
             performance_setting
