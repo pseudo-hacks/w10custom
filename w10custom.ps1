@@ -241,7 +241,7 @@ $privacy_options = @(
        ;value = 0
        ;default_value = 1
        ;type = 'DWord'
-       ;text = '広告IDの使用を許可しない'
+       ;text = '広告IDを無効にする'
        ;recommend = $true
        ;performance = $true
        ;admin = $false
@@ -251,7 +251,7 @@ $privacy_options = @(
        ;value = 0
        ;default_value = 1
        ;type = 'DWord'
-       ;text = 'SmartScreenフィルターをオフにする'
+       ;text = 'WindowsストアアプリのSmartScreenフィルター機能を無効にする'
        ;recommend = $true
        ;performance = $true
        ;admin = $false
@@ -266,12 +266,12 @@ $privacy_options = @(
        ;performance = $true
        ;admin = $false
     }
-    ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search'
-       ;name = 'BingSearchEnabled'
+    ,@{ path = 'HKCU:\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppContainer\Storage\microsoft.microsoftedge_8wekyb3d8bbwe\MicrosoftEdge\PhishingFilter'
+       ;name = 'EnabledV9'
        ;value = 0
        ;default_value = 1
        ;type = 'DWord'
-       ;text = 'タスクバー検索にWebの検索結果を含めない'
+       ;text = 'Microsoft EdgeのSmartScreenフィルター機能を無効にする'
        ;recommend = $true
        ;performance = $true
        ;admin = $false
@@ -282,6 +282,16 @@ $privacy_options = @(
        ;default_value = 1
        ;type = 'DWord'
        ;text = '入力に関する情報をマイクロソフトに送信しない'
+       ;recommend = $true
+       ;performance = $true
+       ;admin = $false
+    }
+    ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search'
+       ;name = 'BingSearchEnabled'
+       ;value = 0
+       ;default_value = 1
+       ;type = 'DWord'
+       ;text = 'タスクバー検索にWebの検索結果を含めない'
        ;recommend = $true
        ;performance = $true
        ;admin = $false
@@ -306,16 +316,6 @@ $privacy_options = @(
        ;performance = $true
        ;admin = $true
     }
-    ,@{ path = 'HKLM:\SOFTWARE\Policies\Microsoft\SQMClient\Windows'
-       ;name = 'CEIPEnable'
-       ;value = 0
-       ;default_value = 1
-       ;type = 'DWord'
-       ;text = 'Windowsカスタマーエクスペリエンス向上プログラムを無効にする'
-       ;recommend = $true
-       ;performance = $true
-       ;admin = $true
-    }
     ,@{ path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search'
        ;name = 'AllowCortana'
        ;value = 0
@@ -334,12 +334,12 @@ $privacy_options = @(
             }
        )
     }
-    ,@{ path = 'HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration'
-       ;name = 'Status'
+    ,@{ path = 'HKLM:\SOFTWARE\Policies\Microsoft\SQMClient\Windows'
+       ;name = 'CEIPEnable'
        ;value = 0
        ;default_value = 1
        ;type = 'DWord'
-       ;text = 'デバイスの位置情報をオフにする'
+       ;text = 'Windowsカスタマーエクスペリエンス向上プログラムを無効にする'
        ;recommend = $true
        ;performance = $true
        ;admin = $true
@@ -347,9 +347,9 @@ $privacy_options = @(
     ,@{ path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection'
        ;name = 'AllowTelemetry'
        ;value = 0
-       ;default_value = 1
+       ;default_value = 3
        ;type = 'DWord'
-       ;text = '遠隔モニタリングを無効にする'
+       ;text = 'デバイスのデータの送信を抑制する'
        ;recommend = $true
        ;performance = $true
        ;admin = $true
@@ -359,7 +359,7 @@ $privacy_options = @(
        ;value = 0
        ;default_value = 1
        ;type = 'DWord'
-       ;text = 'アプリケーション影響度遠隔モニタリングを無効にする'
+       ;text = 'アプリケーション影響度遠隔測定エージェントを無効にする'
        ;recommend = $true
        ;performance = $true
        ;admin = $true
@@ -374,6 +374,7 @@ $privacy_options = @(
        ;performance = $true
        ;admin = $true
     }
+<#
     ,@{ path = 'HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter'
        ;name = 'EnabledV9'
        ;value = 0
@@ -384,6 +385,7 @@ $privacy_options = @(
        ;performance = $true
        ;admin = $true
     }
+#>
     ,@{ service_name = 'DiagTrack'
        ;text = '診断追跡サービスを無効化する'
        ;default = 'Auto'
@@ -396,6 +398,16 @@ $privacy_options = @(
        ;default = 'Manual'
        ;recommend = $true
        ;performance = $true
+       ;admin = $true
+    }
+    ,@{ path = 'HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration'
+       ;name = 'Status'
+       ;value = 0
+       ;default_value = 1
+       ;type = 'DWord'
+       ;text = 'デバイスの位置情報をオフにする'
+       ;recommend = $false
+       ;performance = $false
        ;admin = $true
     }
     ,@{ path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive'
@@ -968,12 +980,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
 	$current_map = Get-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Control\Keyboard Layout" "Scancode Map"
     
     $caps_ctrl = $caps_swap = $caps_default = $caps_custom = $false
-    if ( [system.String]::Join(" ", $caps_to_ctrl_map) -eq [system.String]::Join(" ", $current_map) ) {
+    if ( ($current_map) -and ([system.String]::Join(" ", $caps_to_ctrl_map) -eq [system.String]::Join(" ", $current_map)) ) {
         $caps_ctrl = $true;
-    } elseif ( [system.String]::Join(" ", $swap_caps_ctrl_map) -eq [system.String]::Join(" ", $current_map) ) {
+    } elseif ( ($current_map) -and ([system.String]::Join(" ", $swap_caps_ctrl_map) -eq [system.String]::Join(" ", $current_map)) ) {
         $caps_swap = $true;
     } else {
-        if ( $current_map -ne $null ) {
+        if ( $current_map ) {
             $caps_custom = $true;
         }
         $caps_default = $true;
