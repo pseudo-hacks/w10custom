@@ -469,25 +469,25 @@ $service_options = @(
 
 $task_options = @(
     ,@{ tasks = @(
-                    ,@{  path = '\Microsoft\Windows\Application Experience'
+                    ,@{  path = '\Microsoft\Windows\Application Experience\'
                         ;name = 'Microsoft Compatibility Appraiser'
                     }
-                    ,@{  path = '\Microsoft\Windows\Application Experience'
+                    ,@{  path = '\Microsoft\Windows\Application Experience\'
                         ;name = 'ProgramDataUpdater'
                     }
-                    ,@{  path = '\Microsoft\Windows\Autochk'
+                    ,@{  path = '\Microsoft\Windows\Autochk\'
                         ;name = 'Proxy'
                     }
-                    ,@{  path = '\Microsoft\Windows\Customer Experience Improvement Program'
+                    ,@{  path = '\Microsoft\Windows\Customer Experience Improvement Program\'
                         ;name = 'Consolidator'
                     }
-                    ,@{  path = '\Microsoft\Windows\Customer Experience Improvement Program'
+                    ,@{  path = '\Microsoft\Windows\Customer Experience Improvement Program\'
                         ;name = 'KernelCeipTask'
                     }
-                    ,@{  path = '\Microsoft\Windows\Customer Experience Improvement Program'
+                    ,@{  path = '\Microsoft\Windows\Customer Experience Improvement Program\'
                         ;name = 'UsbCeip'
                     }
-                    ,@{  path = '\Microsoft\Windows\DiskDiagnostic'
+                    ,@{  path = '\Microsoft\Windows\DiskDiagnostic\'
                         ;name = 'Microsoft-Windows-DiskDiagnosticDataCollector'
                     }
                 )
@@ -497,7 +497,7 @@ $task_options = @(
        ;admin = $true
     }
     ,@{ tasks = @(
-                    ,@{  path = '\Microsoft\Windows\Power Efficiency Diagnostics'
+                    ,@{  path = '\Microsoft\Windows\Power Efficiency Diagnostics\'
                         ;name = 'AnalyzeSystem'
                     }
                 )
@@ -507,7 +507,7 @@ $task_options = @(
        ;admin = $true
     }
     ,@{ tasks = @(
-                    ,@{  path = '\Microsoft\Windows\Defrag'
+                    ,@{  path = '\Microsoft\Windows\Defrag\'
                         ;name = 'ScheduledDefrag'
                     }
                 )
@@ -517,7 +517,7 @@ $task_options = @(
        ;admin = $true
     }
     ,@{ tasks = @(
-                    ,@{  path = '\Microsoft\Windows\Maintenance'
+                    ,@{  path = '\Microsoft\Windows\Maintenance\'
                         ;name = 'WinSAT'
                     }
                 )
@@ -527,7 +527,7 @@ $task_options = @(
        ;admin = $true
     }
     ,@{ tasks = @(
-                    ,@{  path = '\Microsoft\Windows\Windows Error Reporting'
+                    ,@{  path = '\Microsoft\Windows\Windows Error Reporting\'
                         ;name = 'QueueReporting'
                     }
                 )
