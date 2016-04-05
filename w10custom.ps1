@@ -41,7 +41,7 @@ $folder_options = @(
        ;value = 1
        ;default_value = 2
        ;type = 'DWord'
-       ;text = 'エクスプローラでクイックアクセスではなくPCを開く'
+       ;text = 'エクスプローラーでクイックアクセスではなくPCを開く'
        ;recommend = $true
        ;performance = $true
        ;admin = $false
@@ -118,6 +118,14 @@ $network_options = @(
        ;recommend = $true
        ;performance = $true
        ;admin = $true
+       ;additional_items = @(
+            ,@{ path = 'HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config'
+               ;name = 'AutoConnectAllowedOEM '
+               ;value = 0
+               ;default_value = 1
+               ;type = 'DWord'
+            }
+       )
     }
 )
 
@@ -210,7 +218,7 @@ $windows_update_options = @(
        ;value = 1
        ;default_value = 0
        ;type = 'DWord'
-       ;text = '更新プログラムのインストール時に自動的に再起動しない'
+       ;text = 'ログオンしているユーザーがいる場合に更新時の再起動を抑制する'
        ;recommend = $true
        ;performance = $true
        ;admin = $true
@@ -236,14 +244,64 @@ $windows_update_options = @(
 )
 
 $privacy_options = @(
+    ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Personalization\Settings'
+       ;name = 'AcceptedPrivacyPolicy'
+       ;value = 0
+       ;default_value = 1
+       ;type = 'DWord'
+       ;text = '連絡先やカレンダーの内容などをマイクロソフトに送信しない'
+       ;recommend = $true
+       ;performance = $true
+       ;admin = $false
+       ;additional_items = @(
+            ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\SettingSync\Groups\Language'
+               ;name = 'Enabled'
+               ;value = 0
+               ;default_value = 1
+               ;type = 'DWord'
+            }
+            ,@{ path = 'HKCU:\SOFTWARE\Microsoft\InputPersonalization'
+               ;name = 'RestrictImplicitInkCollection'
+               ;value = 1
+               ;default_value = 0
+               ;type = 'DWord'
+            }
+            ,@{ path = 'HKCU:\SOFTWARE\Microsoft\InputPersonalization'
+               ;name = 'RestrictImplicitTextCollection'
+               ;value = 1
+               ;default_value = 0
+               ;type = 'DWord'
+            }
+       )
+    }
+    ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Input\TIPC'
+       ;name = 'Enabled'
+       ;value = 0
+       ;default_value = 1
+       ;type = 'DWord'
+       ;text = '入力に関する情報をマイクロソフトに送信しない'
+       ;recommend = $true
+       ;performance = $true
+       ;admin = $false
+    }
     ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo'
        ;name = 'Enabled'
        ;value = 0
        ;default_value = 1
        ;type = 'DWord'
-       ;text = '広告IDを無効にする'
+       ;text = '広告識別子を無効にする'
        ;recommend = $true
        ;performance = $true
+       ;admin = $false
+    }
+    ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Permissions\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}'
+       ;name = 'SensorPermissionState'
+       ;value = 0
+       ;default_value = 1
+       ;type = 'DWord'
+       ;text = 'アプリによる位置情報取得を無効にする'
+       ;recommend = $false
+       ;performance = $false
        ;admin = $false
     }
     ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost'
@@ -272,16 +330,6 @@ $privacy_options = @(
        ;default_value = 1
        ;type = 'DWord'
        ;text = 'Microsoft EdgeのSmartScreenフィルター機能を無効にする'
-       ;recommend = $true
-       ;performance = $true
-       ;admin = $false
-    }
-    ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Input\TIPC'
-       ;name = 'Enabled'
-       ;value = 0
-       ;default_value = 1
-       ;type = 'DWord'
-       ;text = '入力に関する情報をマイクロソフトに送信しない'
        ;recommend = $true
        ;performance = $true
        ;admin = $false
@@ -349,7 +397,7 @@ $privacy_options = @(
        ;value = 0
        ;default_value = 3
        ;type = 'DWord'
-       ;text = 'デバイスのデータの送信を抑制する'
+       ;text = '診断データと使用状況データの収集と送信を抑制する'
        ;recommend = $true
        ;performance = $true
        ;admin = $true
@@ -364,12 +412,12 @@ $privacy_options = @(
        ;performance = $true
        ;admin = $true
     }
-    ,@{ path = 'HKLM:\Software\Policies\Microsoft\Windows\AppCompat'
+    ,@{ path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat'
        ;name = 'DisableUAR'
        ;value = 1
        ;default_value = 0
        ;type = 'DWord'
-       ;text = '問題ステップ記録ツールをオフにする'
+       ;text = 'ステップ記録ツールを無効にする'
        ;recommend = $true
        ;performance = $true
        ;admin = $true
@@ -386,20 +434,6 @@ $privacy_options = @(
        ;admin = $true
     }
 #>
-    ,@{ service_name = 'DiagTrack'
-       ;text = '診断追跡サービスを無効化する'
-       ;default = 'Auto'
-       ;recommend = $true
-       ;performance = $true
-       ;admin = $true
-    }
-    ,@{ service_name = 'dmwappushservice'
-       ;text = 'WAPプッシュメッセージルーティングサービスを無効化する'
-       ;default = 'Manual'
-       ;recommend = $true
-       ;performance = $true
-       ;admin = $true
-    }
     ,@{ path = 'HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration'
        ;name = 'Status'
        ;value = 0
@@ -423,6 +457,20 @@ $privacy_options = @(
 )
 
 $service_options = @(
+    ,@{ service_name = 'DiagTrack'
+       ;text = '診断追跡サービスを無効にする'
+       ;default = 'Auto'
+       ;recommend = $true
+       ;performance = $true
+       ;admin = $true
+    }
+    ,@{ service_name = 'dmwappushservice'
+       ;text = 'WAPプッシュメッセージルーティングサービスを無効にする'
+       ;default = 'Manual'
+       ;recommend = $true
+       ;performance = $true
+       ;admin = $true
+    }
     ,@{ service_name = 'DPS'
        ;text = '診断ポリシーサービスを無効にする'
        ;default = 'Auto'
@@ -444,18 +492,18 @@ $service_options = @(
        ;performance = $true
        ;admin = $true
     }
-    ,@{ service_name = 'seclogon'
-       ;text = 'Secondary Logonサービスを無効にする'
-       ;default = 'Manual'
-       ;recommend = $true
-       ;performance = $true
-       ;admin = $true
-    }
     ,@{ service_name = 'WerSvc'
        ;text = 'Windowsエラー報告サービスを無効にする'
        ;default = 'Manual'
        ;recommend = $true
        ;performance = $true
+       ;admin = $true
+    }
+    ,@{ service_name = 'seclogon'
+       ;text = 'Secondary Logonサービスを無効にする'
+       ;default = 'Manual'
+       ;recommend = $false
+       ;performance = $false
        ;admin = $true
     }
     ,@{ service_name = 'iphlpsvc'
@@ -689,7 +737,7 @@ function customize_form {
 	                            Set-RegistryValue $item['path'] $item['name'] $item['default_value'] $item['type']
                             }
 	                    }
-	                    if ( $item -contains 'additional_items' ) {
+	                    if ( $item.ContainsKey('additional_items') ) {
 	                        foreach ( $aitem in $item['additional_items'] ) {
     	                        if ( $items['checked_list'].GetItemChecked($i) ) {
                                     if ( $aitem['current_value'] -ne $aitem['value'] ) {
@@ -951,9 +999,18 @@ function customize_form {
   	$CopyrightLabel.Text = 'Copyright © 2016 pseudo-hacks.com All Rights Reserved.'
     $AboutPage.Controls.Add($CopyrightLabel)
 
+    $LinkLabel = New-Object System.Windows.Forms.LinkLabel
+    $LinkLabel.Location = '100, 76'
+    $LinkLabel.Size = '300, 24'
+    $LinkLabel.LinkColor = "BLUE"
+    $LinkLabel.ActiveLinkColor = "RED"
+    $LinkLabel.Text = 'http://www.pseudo-hacks.com/w10custom/'
+    $LinkLabel.add_Click({[system.Diagnostics.Process]::start('http://www.pseudo-hacks.com/w10custom/')}) 
+    $AboutPage.Controls.Add($LinkLabel)
+
     $LicenseTextBox = New-Object System.Windows.Forms.TextBox
-    $LicenseTextBox.Location = '8, 90'
-    $LicenseTextBox.Size = '435, 300'
+    $LicenseTextBox.Location = '8, 110'
+    $LicenseTextBox.Size = '435, 266'
     $LicenseTextBox.Multiline = $true
     $LicenseTextBox.Text = "This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -993,7 +1050,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
 
     $CapsLockGroupBox = New-Object System.Windows.Forms.GroupBox
     $CapsLockGroupBox.location = New-Object System.Drawing.Point(8, 8)
-    $CapsLockGroupBox.size = New-Object System.Drawing.Size(435, 360)
+    $CapsLockGroupBox.size = New-Object System.Drawing.Size(435, 380)
     $CapsLockPage.Controls.Add($CapsLockGroupBox)
 
     $CapsCtrlRadioButton = New-Object System.Windows.Forms.RadioButton
@@ -1033,8 +1090,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     	$CapsCautionLabel.Text = "Scancode Mapがカスタマイズされています。`n変更すると、カスタマイズ内容が上書きされます。"
         $CapsLockGroupBox.Controls.Add($CapsCautionLabel)
     }
+    $CapsLockOpenPageButton = New-Object System.Windows.Forms.Button
+    $CapsLockOpenPageButton.Location = New-Object System.Drawing.Point(8, 388)
+    $CapsLockOpenPageButton.Size = New-Object System.Drawing.Size(150, 24)
+    $CapsLockOpenPageButton.Text = "解説ページを開く"
+    $CapsLockOpenPageButton.Add_Click(
+        {
+            start 'http://www.pseudo-hacks.com/w10custom_capslock/'
+        }
+    )
+    $CapsLockPage.Controls.Add($CapsLockOpenPageButton)
 
-    <# 簡単設定 #>
+    <# メインページ #>
     $RecommendButton = New-Object System.Windows.Forms.Button
     $RecommendButton.Location = New-Object System.Drawing.Point(100, 30)
     $RecommendButton.Size = New-Object System.Drawing.Size(260, 24)
@@ -1082,7 +1149,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     <# フォルダーオプション #>
     $FolderOptionsCheckedList = New-Object System.Windows.Forms.CheckedListBox
     $FolderOptionsCheckedList.location = New-Object System.Drawing.Point(8, 8)
-    $FolderOptionsCheckedList.size = New-Object System.Drawing.Size(435, 360)
+    $FolderOptionsCheckedList.size = New-Object System.Drawing.Size(435, 380)
     $FolderOptionsCheckedList.CheckOnClick = $true
     $FolderOptionsCheckedList.SelectionMode = "One"
     $FolderOptionsCheckedList.Update()
@@ -1096,11 +1163,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     )
     $FolderOptionsPage.Controls.Add($FolderOptionsCheckedList)
     set_item $folder_options $FolderOptionsCheckedList
+    $FolderOpenPageButton = New-Object System.Windows.Forms.Button
+    $FolderOpenPageButton.Location = New-Object System.Drawing.Point(8, 388)
+    $FolderOpenPageButton.Size = New-Object System.Drawing.Size(150, 24)
+    $FolderOpenPageButton.Text = "解説ページを開く"
+    $FolderOpenPageButton.Add_Click(
+        {
+            start 'http://www.pseudo-hacks.com/w10custom_folder_option/'
+        }
+    )
+    $FolderOptionsPage.Controls.Add($FolderOpenPageButton)
 
     <# ネットワーク #>
     $NetworkCheckedList = New-Object System.Windows.Forms.CheckedListBox
     $NetworkCheckedList.location = New-Object System.Drawing.Point(8, 8)
-    $NetworkCheckedList.size = New-Object System.Drawing.Size(435, 360)
+    $NetworkCheckedList.size = New-Object System.Drawing.Size(435, 380)
     $NetworkCheckedList.CheckOnClick = $true
     $NetworkCheckedList.SelectionMode = "One"
     $NetworkCheckedList.Update()
@@ -1114,11 +1191,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     )
     $NetworkPage.Controls.Add($NetworkCheckedList)
     set_item $network_options $NetworkCheckedList
+    $NetworkOpenPageButton = New-Object System.Windows.Forms.Button
+    $NetworkOpenPageButton.Location = New-Object System.Drawing.Point(8, 388)
+    $NetworkOpenPageButton.Size = New-Object System.Drawing.Size(150, 24)
+    $NetworkOpenPageButton.Text = "解説ページを開く"
+    $NetworkOpenPageButton.Add_Click(
+        {
+            start 'http://www.pseudo-hacks.com/w10custom_network/'
+        }
+    )
+    $NetworkPage.Controls.Add($NetworkOpenPageButton)
 
     <# 外観 #>
     $AppearanceCheckedList = New-Object System.Windows.Forms.CheckedListBox
     $AppearanceCheckedList.location = New-Object System.Drawing.Point(8, 8)
-    $AppearanceCheckedList.size = New-Object System.Drawing.Size(435, 360)
+    $AppearanceCheckedList.size = New-Object System.Drawing.Size(435, 380)
     $AppearanceCheckedList.CheckOnClick = $true
     $AppearanceCheckedList.SelectionMode = "One"
     $AppearanceCheckedList.Update()
@@ -1132,11 +1219,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     )
     $AppearancePage.Controls.Add($AppearanceCheckedList)
     set_item $appearance_options $AppearanceCheckedList
+    $AppearanceOpenPageButton = New-Object System.Windows.Forms.Button
+    $AppearanceOpenPageButton.Location = New-Object System.Drawing.Point(8, 388)
+    $AppearanceOpenPageButton.Size = New-Object System.Drawing.Size(150, 24)
+    $AppearanceOpenPageButton.Text = "解説ページを開く"
+    $AppearanceOpenPageButton.Add_Click(
+        {
+            start 'http://www.pseudo-hacks.com/w10custom_appearance/'
+        }
+    )
+    $AppearancePage.Controls.Add($AppearanceOpenPageButton)
 
     <# Windows Update #>
     $WindowsUpdateCheckedList = New-Object System.Windows.Forms.CheckedListBox
     $WindowsUpdateCheckedList.location = New-Object System.Drawing.Point(8, 8)
-    $WindowsUpdateCheckedList.size = New-Object System.Drawing.Size(435, 360)
+    $WindowsUpdateCheckedList.size = New-Object System.Drawing.Size(435, 380)
     $WindowsUpdateCheckedList.CheckOnClick = $true
     $WindowsUpdateCheckedList.SelectionMode = "One"
     $WindowsUpdateCheckedList.Update()
@@ -1150,11 +1247,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     )
     $WindowsUpdatePage.Controls.Add($WindowsUpdateCheckedList)
     set_item $windows_update_options $WindowsUpdateCheckedList
+    $WindowsUpdateOpenPageButton = New-Object System.Windows.Forms.Button
+    $WindowsUpdateOpenPageButton.Location = New-Object System.Drawing.Point(8, 388)
+    $WindowsUpdateOpenPageButton.Size = New-Object System.Drawing.Size(150, 24)
+    $WindowsUpdateOpenPageButton.Text = "解説ページを開く"
+    $WindowsUpdateOpenPageButton.Add_Click(
+        {
+            start 'http://www.pseudo-hacks.com/w10custom_windows_update/'
+        }
+    )
+    $WindowsUpdatePage.Controls.Add($WindowsUpdateOpenPageButton)
 
     <# プライバシー #>
     $PrivacyCheckedList = New-Object System.Windows.Forms.CheckedListBox
     $PrivacyCheckedList.location = New-Object System.Drawing.Point(8, 8)
-    $PrivacyCheckedList.size = New-Object System.Drawing.Size(435, 360)
+    $PrivacyCheckedList.size = New-Object System.Drawing.Size(435, 380)
     $PrivacyCheckedList.CheckOnClick = $true
     $PrivacyCheckedList.SelectionMode = "One"
     $PrivacyCheckedList.Update()
@@ -1168,11 +1275,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     )
     $PrivacyPage.Controls.Add($PrivacyCheckedList)
     set_item $privacy_options $PrivacyCheckedList
+    $PrivacyOpenPageButton = New-Object System.Windows.Forms.Button
+    $PrivacyOpenPageButton.Location = New-Object System.Drawing.Point(8, 388)
+    $PrivacyOpenPageButton.Size = New-Object System.Drawing.Size(150, 24)
+    $PrivacyOpenPageButton.Text = "解説ページを開く"
+    $PrivacyOpenPageButton.Add_Click(
+        {
+            start 'http://www.pseudo-hacks.com/w10custom_privacy/'
+        }
+    )
+    $PrivacyPage.Controls.Add($PrivacyOpenPageButton)
 
     <# サービス #>
     $ServiceCheckedList = New-Object System.Windows.Forms.CheckedListBox
     $ServiceCheckedList.location = New-Object System.Drawing.Point(8, 8)
-    $ServiceCheckedList.size = New-Object System.Drawing.Size(435, 360)
+    $ServiceCheckedList.size = New-Object System.Drawing.Size(435, 380)
     $ServiceCheckedList.CheckOnClick = $true
     $ServiceCheckedList.SelectionMode = "One"
     $ServiceCheckedList.Update()
@@ -1186,11 +1303,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     )
     $ServicePage.Controls.Add($ServiceCheckedList)
     set_item $service_options $ServiceCheckedList
+    $ServiceOpenPageButton = New-Object System.Windows.Forms.Button
+    $ServiceOpenPageButton.Location = New-Object System.Drawing.Point(8, 388)
+    $ServiceOpenPageButton.Size = New-Object System.Drawing.Size(150, 24)
+    $ServiceOpenPageButton.Text = "解説ページを開く"
+    $ServiceOpenPageButton.Add_Click(
+        {
+            start 'http://www.pseudo-hacks.com/w10custom_services/'
+        }
+    )
+    $ServicePage.Controls.Add($ServiceOpenPageButton)
 
     <# タスク #>
     $TaskCheckedList = New-Object System.Windows.Forms.CheckedListBox
     $TaskCheckedList.location = New-Object System.Drawing.Point(8, 8)
-    $TaskCheckedList.size = New-Object System.Drawing.Size(435, 360)
+    $TaskCheckedList.size = New-Object System.Drawing.Size(435, 380)
     $TaskCheckedList.CheckOnClick = $true
     $TaskCheckedList.SelectionMode = "One"
     $TaskCheckedList.Update()
@@ -1204,6 +1331,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     )
     $TaskPage.Controls.Add($TaskCheckedList)
     set_item $task_options $TaskCheckedList
+    $TaskOpenPageButton = New-Object System.Windows.Forms.Button
+    $TaskOpenPageButton.Location = New-Object System.Drawing.Point(8, 388)
+    $TaskOpenPageButton.Size = New-Object System.Drawing.Size(150, 24)
+    $TaskOpenPageButton.Text = "解説ページを開く"
+    $TaskOpenPageButton.Add_Click(
+        {
+            start 'http://www.pseudo-hacks.com/w10custom_tasks/'
+        }
+    )
+    $TaskPage.Controls.Add($TaskOpenPageButton)
 
     $Form.ShowDialog() | Out-Null
 }
