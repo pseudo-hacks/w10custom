@@ -24,6 +24,11 @@ Add-Type -AssemblyName System.Drawing
 <# variables #>
 
 $software_name = "w10custom"
+$mutexObject = New-Object System.Threading.Mutex($false, $software_name)
+if (-not $mutexObject.WaitOne(0, $false)) {
+    [System.Windows.Forms.MessageBox]::Show("既に起動されています", "確認 - " + $software_name, "OK", "Error")
+    exit
+}
 
 $folder_options = @(
     ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
@@ -107,7 +112,7 @@ $network_options = @(
        ;text = 'Wi-Fiセンサー（ホットスポット共有）を許可しない'
        ;recommend = $true
        ;performance = $true
-       ;admin = $true
+       ;admin = $trueh
     }
     ,@{ path = 'HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowAutoConnectToWiFiSenseHotspots'
        ;name = 'value'
@@ -211,6 +216,7 @@ $windows_update_options = @(
        ;text = '更新プログラムのインストール時に再起動の日時を設定するよう通知する'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU'
@@ -221,6 +227,7 @@ $windows_update_options = @(
        ;text = 'ログオンしているユーザーがいる場合に更新時の再起動を抑制する'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ path = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config'
@@ -232,6 +239,7 @@ $windows_update_options = @(
        ;recommend = $true
        ;performance = $true
        ;admin = $true
+       ;recommend2 = $true
        ;additional_items = @(
             ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization'
                ;name = 'SystemSettingsDownloadMode'
@@ -282,6 +290,7 @@ $privacy_options = @(
        ;text = '入力に関する情報をマイクロソフトに送信しない'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $false
     }
     ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo'
@@ -390,16 +399,18 @@ $privacy_options = @(
        ;text = 'Windowsカスタマーエクスペリエンス向上プログラムを無効にする'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection'
-       ;name = 'AllowTelemetry'
+       ;name = 'Allowrecommend2  '
        ;value = 0
        ;default_value = 3
        ;type = 'DWord'
        ;text = '診断データと使用状況データの収集と送信を抑制する'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat'
@@ -410,6 +421,7 @@ $privacy_options = @(
        ;text = 'アプリケーション影響度遠隔測定エージェントを無効にする'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat'
@@ -462,6 +474,7 @@ $service_options = @(
        ;default = 'Auto'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ service_name = 'dmwappushservice'
@@ -469,6 +482,7 @@ $service_options = @(
        ;default = 'Manual'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ service_name = 'DPS'
@@ -476,6 +490,7 @@ $service_options = @(
        ;default = 'Auto'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ service_name = 'TrkWks'
@@ -483,6 +498,7 @@ $service_options = @(
        ;default = 'Auto'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ service_name = 'PcaSvc'
@@ -497,6 +513,7 @@ $service_options = @(
        ;default = 'Manual'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ service_name = 'seclogon'
@@ -542,6 +559,7 @@ $task_options = @(
        ;text = 'カスタマーエクスペリエンス向上プログラム関連データ送信タスクを無効にする'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ tasks = @(
@@ -552,6 +570,7 @@ $task_options = @(
        ;text = '電源管理の分析タスクを無効にする'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ tasks = @(
@@ -562,6 +581,7 @@ $task_options = @(
        ;text = '自動デフラグタスクを無効にする'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ tasks = @(
@@ -572,6 +592,7 @@ $task_options = @(
        ;text = 'システム性能測定タスクを無効にする'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
     ,@{ tasks = @(
@@ -582,6 +603,7 @@ $task_options = @(
        ;text = 'Windowsエラー報告タスクを無効にする'
        ;recommend = $true
        ;performance = $true
+       ;recommend2 = $true
        ;admin = $true
     }
 )
@@ -800,6 +822,7 @@ function customize_form {
     }
 
     function recommend_setting {
+        $changed = $false
         foreach ( $items in
                     @(
                         ,@{ options = $folder_options;         checked_list = $FolderOptionsCheckedList }
@@ -820,15 +843,58 @@ function customize_form {
                     if ( $items['checked_list'].GetItemChecked($i) -eq $false ) {
                         Write-Host ("{0} をオンにします" -f $item['text'])
                         $items['checked_list'].SetItemChecked($i, $true)
-                    }
-                } else {
-                    if ( $items['checked_list'].GetItemChecked($i) -eq $true ) {
-                        Write-Host ("{0} をオフにします" -f $item['text'])
-                        $items['checked_list'].SetItemChecked($i, $false)
+                        $changed = $true
                     }
                 }
             }
         }
+        if ( $changed -eq $true ) {
+            $text = "項目をオンにしました。"
+        } else {
+            $text = "変更する項目はありませんでした。"
+        }
+        $caption = "確認 - " + $software_name
+        $buttonsType = "OK"
+        $iconType = "Information"
+        [System.Windows.Forms.MessageBox]::Show($text, $caption, $buttonsType, $iconType)
+    }
+
+    function recommend2_setting {
+        $changed = $false
+        foreach ( $items in
+                    @(
+                        ,@{ options = $folder_options;         checked_list = $FolderOptionsCheckedList }
+                        ,@{ options = $network_options;        checked_list = $NetworkCheckedList }
+                        ,@{ options = $appearance_options;     checked_list = $AppearanceCheckedList }
+                        ,@{ options = $windows_update_options; checked_list = $WindowsUpdateCheckedList }
+                        ,@{ options = $privacy_options;        checked_list = $PrivacyCheckedList }
+                        ,@{ options = $service_options;        checked_list = $ServiceCheckedList }
+                        ,@{ options = $task_options;           checked_list = $TaskCheckedList }
+                    )
+                ) {
+            foreach ( $item in $items['options'] ) {
+                if ( ($item['admin'] -eq $true) -and ($script:admin -eq $false) ) {
+                    continue
+                }
+                $i = $items['options'].IndexOf($item)
+                if ( $item['recommend2'] -eq $true ) {
+                    if ( $items['checked_list'].GetItemChecked($i) -eq $false ) {
+                        Write-Host ("{0} をオンにします" -f $item['text'])
+                        $items['checked_list'].SetItemChecked($i, $true)
+                        $changed = $true
+                    }
+                }
+            }
+        }
+        if ( $changed -eq $true ) {
+            $text = "項目をオンにしました。"
+        } else {
+            $text = "変更する項目はありませんでした。"
+        }
+        $caption = "確認 - " + $software_name
+        $buttonsType = "OK"
+        $iconType = "Information"
+        [System.Windows.Forms.MessageBox]::Show($text, $caption, $buttonsType, $iconType)
     }
 
     function performance_setting {
@@ -852,11 +918,6 @@ function customize_form {
                     if ( $items['checked_list'].GetItemChecked($i) -eq $false ) {
                         Write-Host ("{0} をオンにします" -f $item['text'])
                         $items['checked_list'].SetItemChecked($i, $true)
-                    }
-                } else {
-                    if ( $items['checked_list'].GetItemChecked($i) -eq $true ) {
-                        Write-Host ("{0} をオフにします" -f $item['text'])
-                        $items['checked_list'].SetItemChecked($i, $false)
                     }
                 }
             }
@@ -973,7 +1034,7 @@ function customize_form {
     $CancelButton.Text = "キャンセル"
     $CancelButton.Add_Click(
         {
-            $text = "変更した設定は破棄されます。`n終了してよろしいですか？"
+            $text = "設定を反映せずに終了してよろしいですか？"
             $caption = "確認 - " + $software_name
             $buttonsType = "OKCancel"
             $iconType = "Question"
@@ -1102,28 +1163,67 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     $CapsLockPage.Controls.Add($CapsLockOpenPageButton)
 
     <# メインページ #>
+    $IkkatsuGroup = New-Object System.Windows.Forms.GroupBox
+	$IkkatsuGroup.Location = '8, 8'
+    $IkkatsuGroup.Size = '435, 190'
+    $IkkatsuGroup.Text = '一括設定'
+    $MainPage.Controls.Add($IkkatsuGroup)
+
+    $OtherAppsGroup = New-Object System.Windows.Forms.GroupBox
+	$OtherAppsGroup.Location = '8, 210'
+    $OtherAppsGroup.Size = '435, 190'
+    $OtherAppsGroup.Text = '他のアプリ'
+    $MainPage.Controls.Add($OtherAppsGroup)
+
     $RecommendButton = New-Object System.Windows.Forms.Button
-    $RecommendButton.Location = New-Object System.Drawing.Point(100, 30)
-    $RecommendButton.Size = New-Object System.Drawing.Size(260, 24)
-    $RecommendButton.Text = "おすすめ設定(&R)"
+    $RecommendButton.Location = New-Object System.Drawing.Point(100, 20)
+    $RecommendButton.Size = New-Object System.Drawing.Size(240, 24)
+    $RecommendButton.Text = "おすすめ設定"
     $RecommendButton.Add_Click(
         {
             recommend_setting
-            $text = "各タブの各項目を、おすすめの設定になるよう変更しました。"
-            $caption = "確認 - " + $software_name
-            $buttonsType = "OK"
-            $iconType = "Information"
-            [System.Windows.Forms.MessageBox]::Show($text, $caption, $buttonsType, $iconType)
         }
     )
-    $MainPage.Controls.Add($RecommendButton)
+    $IkkatsuGroup.Controls.Add($RecommendButton)
 
     $RecommendLabel = New-Object System.Windows.Forms.Label
-	$RecommendLabel.Location = New-Object System.Drawing.Point(100, 60)
-	$RecommendLabel.Size = New-Object System.Drawing.Size(260, 48)
-	$RecommendLabel.Text = "各タブの項目を、おすすめの設定に変更します。"
-    $MainPage.Controls.Add($RecommendLabel)
+	$RecommendLabel.Location = New-Object System.Drawing.Point(30, 50)
+	$RecommendLabel.Size = New-Object System.Drawing.Size(380, 48)
+	$RecommendLabel.Text = "おすすめの設定項目をオンにします。プライバシー対策を優先するため、Cortanaなどユーザー情報の送信を伴う機能が無効になります。なお、すでにオンに設定されている項目はオフになりません。"
+    $IkkatsuGroup.Controls.Add($RecommendLabel)
 
+    $Recommend2Button = New-Object System.Windows.Forms.Button
+    $Recommend2Button.Location = New-Object System.Drawing.Point(100, 110)
+    $Recommend2Button.Size = New-Object System.Drawing.Size(240, 24)
+    $Recommend2Button.Text = "ひかえめ設定"
+    $Recommend2Button.Add_Click(
+        {
+            recommend2_setting
+        }
+    )
+    $IkkatsuGroup.Controls.Add($Recommend2Button)
+
+    $Recommend2Label = New-Object System.Windows.Forms.Label
+	$Recommend2Label.Location = New-Object System.Drawing.Point(30, 140)
+	$Recommend2Label.Size = New-Object System.Drawing.Size(380, 48)
+	$Recommend2Label.Text = "ユーザーの使い勝手に影響のない範囲で、マイクロソフトへのデータ送信を抑制する項目をオンにします。Cortanaなど主要機能に関する項目は変更しません。なお、すでにオンに設定されている項目はオフになりません。"
+    $IkkatsuGroup.Controls.Add($Recommend2Label)
+
+    $FontinstButton = New-Object System.Windows.Forms.Button
+    $FontinstButton.Location = New-Object System.Drawing.Point(26, 20)
+    $FontinstButton.Size = New-Object System.Drawing.Size(380, 24)
+    $FontinstButton.Text = "日本語フリーフォントインストールアプリ「w10fontinst」を起動する"
+    $FontinstButton.Add_Click(
+        {
+            Start-Job { iex -Command ('$invoked_from = "w10custom";' + ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/pseudo-hacks/w10fontinst/master/w10fontinst.ps1'))) }
+        }
+    )
+    $OtherAppsGroup.Controls.Add($FontinstButton)
+    if ( ($script:admin -ne $true) -or ($invoked_from -eq "w10fontinst") ) {
+        $FontinstButton.Enabled = $false
+    }
+
+<#
     $PerformanceButton = New-Object System.Windows.Forms.Button
     $PerformanceButton.Location = New-Object System.Drawing.Point(100, 120)
     $PerformanceButton.Size = New-Object System.Drawing.Size(260, 24)
@@ -1145,6 +1245,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
 	$PerformanceLabel.Size = New-Object System.Drawing.Size(300, 48)
 	$PerformanceLabel.Text = "各タブの項目を、パフォーマンス重視の設定に変更します。"
     $MainPage.Controls.Add($PerformanceLabel)
+#>
 
     <# フォルダーオプション #>
     $FolderOptionsCheckedList = New-Object System.Windows.Forms.CheckedListBox
@@ -1350,3 +1451,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
 disclaimer
 check_admin
 customize_form
+
+try {
+    $mutexObject.ReleaseMutex()
+    $mutexObject.Close()
+} catch { }
