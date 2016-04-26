@@ -29,6 +29,13 @@ if (-not $mutexObject.WaitOne(0, $false)) {
     [System.Windows.Forms.MessageBox]::Show("既に起動されています", "確認 - " + $software_name, "OK", "Error")
     exit
 }
+function safe_exit {
+    try {
+        $script:mutexObject.ReleaseMutex()
+        $script:mutexObject.Close()
+    } catch { }
+    exit
+}
 
 $folder_options = @(
     ,@{ path = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
@@ -318,7 +325,7 @@ $privacy_options = @(
        ;value = 0
        ;default_value = 1
        ;type = 'DWord'
-       ;text = 'WindowsストアアプリのSmartScreenフィルター機能を無効にする'
+       ;text = 'アプリのSmartScreenフィルター機能を無効にする'
        ;recommend = $true
        ;performance = $true
        ;admin = $false
@@ -659,7 +666,7 @@ function disclaimer {
     $iconType = "Question"
     $result = [System.Windows.Forms.MessageBox]::Show($text, $caption, $buttonsType, $iconType)
     if ( $result -ne 'OK' ) {
-        exit
+        safe_exit
     }
 }
 
@@ -883,11 +890,17 @@ function customize_form {
                         $items['checked_list'].SetItemChecked($i, $true)
                         $changed = $true
                     }
+                } else {
+                    if ( $items['checked_list'].GetItemChecked($i) -eq $true ) {
+                        Write-Host ("{0} をオフにします" -f $item['text'])
+                        $items['checked_list'].SetItemChecked($i, $false)
+                        $changed = $true
+                    }
                 }
             }
         }
         if ( $changed -eq $true ) {
-            $text = "項目をオンにしました。"
+            $text = "選択状態を変更しました。"
         } else {
             $text = "変更する項目はありませんでした。"
         }
@@ -1206,7 +1219,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     $Recommend2Label = New-Object System.Windows.Forms.Label
 	$Recommend2Label.Location = New-Object System.Drawing.Point(30, 140)
 	$Recommend2Label.Size = New-Object System.Drawing.Size(380, 48)
-	$Recommend2Label.Text = "ユーザーの使い勝手に影響のない範囲で、マイクロソフトへのデータ送信を抑制する項目をオンにします。Cortanaなど主要機能に関する項目は変更しません。なお、すでにオンに設定されている項目はオフになりません。"
+	$Recommend2Label.Text = "ユーザーの使い勝手に影響のない範囲で、マイクロソフトへのデータ送信を抑制する項目をオンにします。Cortanaなど機能に関する項目は有効になります。"
     $IkkatsuGroup.Controls.Add($Recommend2Label)
 
     $FontinstButton = New-Object System.Windows.Forms.Button
@@ -1215,12 +1228,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
     $FontinstButton.Text = "日本語フリーフォントインストールアプリ「w10fontinst」を起動する"
     $FontinstButton.Add_Click(
         {
-            Start-Job { iex -Command ('$invoked_from = "w10custom";' + ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/pseudo-hacks/w10fontinst/master/w10fontinst.ps1'))) }
+            Start-Job { iex -Command ('$invoked_from = "' + $software_name + '";' + ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/pseudo-hacks/w10fontinst/master/w10fontinst.ps1'))) }
         }
     )
     $OtherAppsGroup.Controls.Add($FontinstButton)
     if ( ($script:admin -ne $true) -or ($invoked_from -eq "w10fontinst") ) {
         $FontinstButton.Enabled = $false
+    }
+
+    $AppInstButton = New-Object System.Windows.Forms.Button
+    $AppInstButton.Location = New-Object System.Drawing.Point(26, 50)
+    $AppInstButton.Size = New-Object System.Drawing.Size(380, 24)
+    $AppInstButton.Text = "アプリ一括インストールアプリ「w10appinst」を起動する"
+    $AppInstButton.Add_Click(
+        {
+            Start-Job { iex -Command ('$invoked_from = "' + $software_name + '";' + ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/pseudo-hacks/w10appinst/master/w10appinst.ps1'))) }
+        }
+    )
+    $OtherAppsGroup.Controls.Add($AppInstButton)
+    if ( ($script:admin -ne $true) -or ($invoked_from -eq "w10appinst") ) {
+        $AppInstButton.Enabled = $false
     }
 
 <#
@@ -1451,8 +1478,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."
 disclaimer
 check_admin
 customize_form
-
-try {
-    $mutexObject.ReleaseMutex()
-    $mutexObject.Close()
-} catch { }
+safe_exit
